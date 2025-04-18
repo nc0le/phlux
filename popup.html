@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>PhiBot</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://use.typekit.net/nun1hsn.css">
+  </head>  
+  <body>
+    <div class="card">
+      <h1>PhiBot</h1>
+
+      <!-- Form to add new company (hidden by default) -->
+      <div id="companyInputs" class="add-company-form">
+        <label for="companyName">Company Name:</label>
+        <input type="text" id="companyName" placeholder="e.g. Google" />
+      
+        <label for="companyUrl">Job Listing URL:</label>
+        <input type="text" id="companyUrl" placeholder="Paste job URL here" />
+      
+        <label for="className">Job Title Class Name:</label>
+        <input type="text" id="className" placeholder="e.g. QJPWVe" />
+      
+        <button id="saveCompany">Save Company</button>
+      </div>
+      
+      <!-- Floating Add Button -->
+      <!-- Buttons Row -->
+      <div class="button-row">
+        <button id="checkBtn">Check Jobs</button>
+        <button class="fab" id="toggleAddCompany">+</button>
+      </div>
+
+      <h2>Companies</h2>
+      <div id="result" class="message"></div>
+
+      <div class="company-box">
+        <div id="jobList" class="job-list"></div>
+      </div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
