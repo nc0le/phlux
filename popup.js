@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
           return new Promise((resolve, reject) => {
             const start = Date.now();
             const check = () => {
-              const elements = document.querySelectorAll(`.${selector}`);
+              const elements = document.querySelectorAll(selector); // Use full selector
               if (elements.length > 0) {
                 resolve(Array.from(elements).map(el => el.textContent.trim()).filter(Boolean));
               } else if (Date.now() - start > timeout) {
@@ -205,9 +205,11 @@ document.addEventListener('DOMContentLoaded', () => {
             check();
           });
         }
-  
+        
         try {
-          return await waitForElements(className);
+          // Split the className into individual classes and join them with dots for a valid selector
+          const selector = className.split(' ').map(cls => `.${cls}`).join('');
+          return await waitForElements(selector);
         } catch {
           return [];
         }
@@ -215,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
       args: [className],
     });
     return result;
-  }
+  }  
 
   async function scrollPageToBottom(tabId) {
     console.log('Scrolling the page to load content...');
