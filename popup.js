@@ -131,32 +131,39 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   checkBtn.addEventListener("click", async () => {
+    // Show loader
+    const loader = document.createElement("div");
+    loader.className = "loader-container";
+    loader.innerHTML = `<div class="loader"></div>`;
+    output.innerHTML = "";
+    output.appendChild(loader);
+  
     chrome.storage.local.get({ companies: [], appliedJobs: [], jobData: [] }, async ({ companies, appliedJobs, jobData }) => {
       const newJobData = [];
       let foundNew = false;
-
+  
       for (const { name, url, className } of companies) {
         try {
           const [tab] = await chrome.tabs.query({ url });
           let tabId;
-
+  
           if (tab) {
             tabId = tab.id;
           } else {
             const newTab = await chrome.tabs.create({ url, active: false });
             tabId = newTab.id;
-            await new Promise(resolve => setTimeout(resolve, 5000));
+            await new Promise(resolve => setTimeout(resolve, 2500));
           }
-
+  
           const jobs = await scrapeFromTab(tabId, className);
           const prevCompanyData = jobData.find(entry => entry.company === name);
           const prevJobs = prevCompanyData ? prevCompanyData.jobs : [];
           const newJobs = jobs.filter(job => !prevJobs.includes(job));
-
+  
           if (newJobs.length > 0) {
             foundNew = true;
           }
-
+  
           newJobData.push({ company: name, jobs });
           chrome.tabs.remove(tabId);
         } catch (error) {
@@ -166,15 +173,18 @@ document.addEventListener('DOMContentLoaded', () => {
           output.appendChild(errorMsg);
         }
       }
-
+  
+      // Remove loader
+      output.innerHTML = "";
+  
       chrome.storage.local.set({ jobData: newJobData }, () => {
         renderJobs(newJobData, appliedJobs);
       });
-
+  
       resultDiv.textContent = "";
       card.classList.add("flash-success");
       setTimeout(() => card.classList.remove("flash-success"), 1000);
       showToast(foundNew ? "🎉 New jobs found!" : "📭 No new jobs.", foundNew);
     });
-  });
+  });  
 });
