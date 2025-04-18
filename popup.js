@@ -8,6 +8,39 @@ document.addEventListener('DOMContentLoaded', () => {
   const resultDiv = document.getElementById("result");
   const card = document.querySelector(".card");
 
+  let filterKeywords = [];
+
+  // Load filter from Chrome storage
+  chrome.storage.sync.get(['filterKeywords'], (result) => {
+    if (result.filterKeywords) {
+      filterKeywords = result.filterKeywords;
+      document.getElementById("filterKeywords").value = filterKeywords.join(', ');
+    }
+  });
+
+  // Save filter keywords to storage
+  document.getElementById("saveFilter").addEventListener("click", () => {
+    const keywords = document.getElementById("filterKeywords").value
+      .split(',')
+      .map(k => k.trim().toLowerCase())
+      .filter(k => k.length > 0);
+    chrome.storage.sync.set({ filterKeywords: keywords }, () => {
+      filterKeywords = keywords;
+      alert("Filter saved!");
+    });
+  });
+
+  // Toggle visibility of filter input
+  document.getElementById("filterBtn").addEventListener("click", () => {
+    const container = document.getElementById("filterInputContainer");
+    container.style.display = container.style.display === 'none' ? 'block' : 'none';
+  });
+
+  // Filtering function
+  function jobTitleIsAllowed(title) {
+    return !filterKeywords.some(keyword => title.toLowerCase().includes(keyword));
+  }
+
   if (buttonContainer && toggleBtn && checkBtn) {
     buttonContainer.appendChild(toggleBtn);
   }
@@ -68,29 +101,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const ul = document.createElement("ul");
       jobs.forEach(job => {
-        const li = document.createElement("li");
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = appliedJobs.includes(job);
+        if (jobTitleIsAllowed(job)) {
+          const li = document.createElement("li");
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = appliedJobs.includes(job);
 
-        checkbox.addEventListener("change", () => {
-          chrome.storage.local.get({ appliedJobs: [] }, (res) => {
-            let updated = [...res.appliedJobs];
-            if (checkbox.checked) {
-              if (!updated.includes(job)) updated.push(job);
-            } else {
-              updated = updated.filter(j => j !== job);
-            }
-            chrome.storage.local.set({ appliedJobs: updated });
+          checkbox.addEventListener("change", () => {
+            chrome.storage.local.get({ appliedJobs: [] }, (res) => {
+              let updated = [...res.appliedJobs];
+              if (checkbox.checked) {
+                if (!updated.includes(job)) updated.push(job);
+              } else {
+                updated = updated.filter(j => j !== job);
+              }
+              chrome.storage.local.set({ appliedJobs: updated });
+            });
           });
-        });
 
-        const label = document.createElement("label");
-        label.textContent = job;
+          const label = document.createElement("label");
+          label.textContent = job;
 
-        li.appendChild(checkbox);
-        li.appendChild(label);
-        ul.appendChild(li);
+          li.appendChild(checkbox);
+          li.appendChild(label);
+          ul.appendChild(li);
+        }
       });
       output.appendChild(ul);
     });
@@ -181,7 +216,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     return result;
   }
-  
 
   async function scrollPageToBottom(tabId) {
     console.log('Scrolling the page to load content...');

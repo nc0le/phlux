@@ -8,14 +8,22 @@
   </head>  
   <body>
     <div class="card">
-      <!-- Floating Add Button -->
       <div class="header-row">
         <h1>PhiBot</h1>
         <div class="button-row">
           <button id="checkBtn">Check Jobs</button>
+          <button id="filterBtn">Filter</button>
           <button class="fab" id="toggleAddCompany">+</button>
         </div>
-      </div>  
+      </div>
+      
+      <!-- Filter input (hidden by default) -->
+      <div id="filterInputContainer" style="display: none; margin-top: 10px;">
+        <label for="filterKeywords">Exclude Jobs Containing:</label>
+        <input type="text" id="filterKeywords" placeholder="e.g. PhD, Senior, Staff" />
+        <button id="saveFilter">Save Filter</button>
+      </div>
+      
       <!-- Form to add new company (hidden by default) -->
       <div id="companyInputs" class="add-company-form">
         <label for="companyName">Company Name:</label>
