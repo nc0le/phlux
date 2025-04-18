@@ -118,6 +118,38 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => toast.remove(), 2500);
   }
 
+  async function waitForElement(tabId, className) {
+    const maxRetries = 10;
+    let attempt = 0;
+
+    return new Promise((resolve, reject) => {
+      const interval = setInterval(async () => {
+        console.log(`Attempt ${attempt + 1} to find ${className} on the page...`);
+
+        const [{ result }] = await chrome.scripting.executeScript({
+          target: { tabId },
+          func: (className) => {
+            return document.querySelector(`.${className}`) !== null;
+          },
+          args: [className],
+        });
+
+        if (result) {
+          console.log(`Element ${className} found on attempt ${attempt + 1}`);
+          clearInterval(interval);
+          resolve();
+        }
+
+        attempt++;
+        if (attempt >= maxRetries) {
+          console.error(`Timeout: Couldn't find element ${className} after ${maxRetries} attempts`);
+          clearInterval(interval);
+          reject(`Timeout: Couldn't find element after ${maxRetries} attempts`);
+        }
+      }, 1000);
+    });
+  }
+
   async function scrapeFromTab(tabId, className) {
     const [{ result }] = await chrome.scripting.executeScript({
       target: { tabId },
@@ -130,40 +162,54 @@ document.addEventListener('DOMContentLoaded', () => {
     return result;
   }
 
+  async function scrollPageToBottom(tabId) {
+    console.log('Scrolling the page to load content...');
+    await chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => {
+        window.scrollTo(0, document.body.scrollHeight);
+      },
+    });
+    await new Promise(resolve => setTimeout(resolve, 2000));
+  }
+
   checkBtn.addEventListener("click", async () => {
-    // Show loader
     const loader = document.createElement("div");
     loader.className = "loader-container";
     loader.innerHTML = `<div class="loader"></div>`;
     output.innerHTML = "";
     output.appendChild(loader);
-  
+
     chrome.storage.local.get({ companies: [], appliedJobs: [], jobData: [] }, async ({ companies, appliedJobs, jobData }) => {
       const newJobData = [];
       let foundNew = false;
-  
+
       for (const { name, url, className } of companies) {
         try {
           const [tab] = await chrome.tabs.query({ url });
           let tabId;
-  
+
           if (tab) {
             tabId = tab.id;
           } else {
             const newTab = await chrome.tabs.create({ url, active: false });
             tabId = newTab.id;
-            await new Promise(resolve => setTimeout(resolve, 2500));
+            await new Promise(resolve => setTimeout(resolve, 2000));
           }
-  
+
+          await scrollPageToBottom(tabId);
+
+          await waitForElement(tabId, className);
+
           const jobs = await scrapeFromTab(tabId, className);
           const prevCompanyData = jobData.find(entry => entry.company === name);
           const prevJobs = prevCompanyData ? prevCompanyData.jobs : [];
           const newJobs = jobs.filter(job => !prevJobs.includes(job));
-  
+
           if (newJobs.length > 0) {
             foundNew = true;
           }
-  
+
           newJobData.push({ company: name, jobs });
           chrome.tabs.remove(tabId);
         } catch (error) {
@@ -173,18 +219,18 @@ document.addEventListener('DOMContentLoaded', () => {
           output.appendChild(errorMsg);
         }
       }
-  
+
       // Remove loader
       output.innerHTML = "";
-  
+
       chrome.storage.local.set({ jobData: newJobData }, () => {
         renderJobs(newJobData, appliedJobs);
       });
-  
+
       resultDiv.textContent = "";
       card.classList.add("flash-success");
       setTimeout(() => card.classList.remove("flash-success"), 1000);
       showToast(foundNew ? "🎉 New jobs found!" : "📭 No new jobs.", foundNew);
     });
-  });  
+  });
 });

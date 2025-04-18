@@ -3,7 +3,7 @@
   "name": "PhiBot",
   "version": "1.0",
   "description": "Check for new internships using filters.",
-  "permissions": ["storage", "scripting", "activeTab"],
+  "permissions": ["storage", "scripting", "activeTab", "webNavigation"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
