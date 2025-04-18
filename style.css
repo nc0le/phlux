@@ -65,10 +65,8 @@ button:hover {
   max-height: 200px;
   overflow-y: auto;
   padding-right: 5px;
-  padding-bottom: 20px; /* 👈 this gives breathing room above the + button */
+  padding-bottom: 20px;
 }
-
-
 
 .job-list ul {
   list-style: none;
@@ -231,7 +229,6 @@ li input[type="checkbox"] {
   justify-content: center;
   gap: 10px;
   align-items: center;
-  margin-bottom: 15px;
 }
 
 .button-row .fab {
@@ -267,7 +264,7 @@ li input[type="checkbox"] {
 
 .company-container h2 {
   margin: 0;  /* Remove default margin */
-  padding-top: 20px;  /* Adjust padding to lower the company name */
+  padding-top: 20px; 
 }
 
 .company-container:last-child {
@@ -300,4 +297,16 @@ li input[type="checkbox"] {
   justify-content: center;
   align-items: center;
   margin: 20px 0;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-row h1 {
+  font-size: 28px;
+  margin-bottom: 0px;
+  margin: -10px 0 0 0;
 }
