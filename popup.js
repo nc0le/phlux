@@ -153,14 +153,35 @@ document.addEventListener('DOMContentLoaded', () => {
   async function scrapeFromTab(tabId, className) {
     const [{ result }] = await chrome.scripting.executeScript({
       target: { tabId },
-      func: (className) => {
-        const elements = document.querySelectorAll(`.${className}`);
-        return Array.from(elements).map(el => el.textContent.trim()).filter(Boolean);
+      func: async (className) => {
+        function waitForElements(selector, timeout = 10000) {
+          return new Promise((resolve, reject) => {
+            const start = Date.now();
+            const check = () => {
+              const elements = document.querySelectorAll(`.${selector}`);
+              if (elements.length > 0) {
+                resolve(Array.from(elements).map(el => el.textContent.trim()).filter(Boolean));
+              } else if (Date.now() - start > timeout) {
+                reject(new Error("Timeout waiting for elements"));
+              } else {
+                setTimeout(check, 300);
+              }
+            };
+            check();
+          });
+        }
+  
+        try {
+          return await waitForElements(className);
+        } catch {
+          return [];
+        }
       },
       args: [className],
     });
     return result;
   }
+  
 
   async function scrollPageToBottom(tabId) {
     console.log('Scrolling the page to load content...');
@@ -179,58 +200,66 @@ document.addEventListener('DOMContentLoaded', () => {
     loader.innerHTML = `<div class="loader"></div>`;
     output.innerHTML = "";
     output.appendChild(loader);
-
+  
     chrome.storage.local.get({ companies: [], appliedJobs: [], jobData: [] }, async ({ companies, appliedJobs, jobData }) => {
       const newJobData = [];
       let foundNew = false;
-
-      for (const { name, url, className } of companies) {
+  
+      const scrapeJobsForCompany = async ({ name, url, className }) => {
+        let tabId;
+        let openedNewTab = false;
+  
         try {
-          const [tab] = await chrome.tabs.query({ url });
-          let tabId;
-
-          if (tab) {
-            tabId = tab.id;
+          const [existingTab] = await chrome.tabs.query({ url });
+  
+          if (existingTab) {
+            tabId = existingTab.id;
           } else {
             const newTab = await chrome.tabs.create({ url, active: false });
             tabId = newTab.id;
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            openedNewTab = true;
+  
+            // Wait until tab finishes loading
+            await new Promise(resolve => {
+              const checkTabLoaded = () => {
+                chrome.tabs.get(tabId, (tab) => {
+                  if (tab && tab.status === "complete") {
+                    resolve();
+                  } else {
+                    setTimeout(checkTabLoaded, 2000);
+                  }
+                });
+              };
+              checkTabLoaded();
+            });
           }
-
-          await scrollPageToBottom(tabId);
-
-          await waitForElement(tabId, className);
-
+  
           const jobs = await scrapeFromTab(tabId, className);
           const prevCompanyData = jobData.find(entry => entry.company === name);
           const prevJobs = prevCompanyData ? prevCompanyData.jobs : [];
           const newJobs = jobs.filter(job => !prevJobs.includes(job));
-
-          if (newJobs.length > 0) {
-            foundNew = true;
-          }
-
+  
+          if (newJobs.length > 0) foundNew = true;
           newJobData.push({ company: name, jobs });
-          chrome.tabs.remove(tabId);
-        } catch (error) {
-          console.error(`Error checking jobs for ${name}:`, error);
-          const errorMsg = document.createElement("p");
-          errorMsg.textContent = `Could not fetch jobs for ${name}`;
-          output.appendChild(errorMsg);
+  
+          if (openedNewTab) await chrome.tabs.remove(tabId);
+        } catch (err) {
+          console.error(`Failed scraping ${name}:`, err);
+          newJobData.push({ company: name, jobs: [] });
         }
-      }
-
-      // Remove loader
+      };
+  
+      await Promise.all(companies.map(scrapeJobsForCompany));
+  
       output.innerHTML = "";
-
       chrome.storage.local.set({ jobData: newJobData }, () => {
         renderJobs(newJobData, appliedJobs);
       });
-
+  
       resultDiv.textContent = "";
       card.classList.add("flash-success");
       setTimeout(() => card.classList.remove("flash-success"), 1000);
       showToast(foundNew ? "🎉 New jobs found!" : "📭 No new jobs.", foundNew);
     });
-  });
+  });  
 });
