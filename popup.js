@@ -158,6 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
 
           newJobData.push({ company: name, jobs });
+          chrome.tabs.remove(tabId);
         } catch (error) {
           console.error(`Error checking jobs for ${name}:`, error);
           const errorMsg = document.createElement("p");
