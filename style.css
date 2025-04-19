@@ -201,17 +201,22 @@ li input[type="checkbox"] {
 }
 
 .remove-company {
+  /* font-weight: bold; */
   background-color: #ea4335;
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 5px;
-  font-size: 12px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 20px;
   cursor: pointer;
   transition: background-color 0.2s ease;
   margin-left: 10px;
-  vertical-align: middle;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 
 .remove-company:hover {
   background-color: #d93025;
@@ -255,7 +260,7 @@ li input[type="checkbox"] {
 
 .company-container {
   border-bottom: 1px solid #e0e0e0;
-  padding: 10px 0;
+  padding: 0px 0;
   display: flex;
   justify-content: space-between;
   align-items: center; 
