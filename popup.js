@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  function renderJobs(jobData, appliedJobs) {
+  function renderJobs(jobData, appliedJobs, previousJobData = []) {
     output.innerHTML = "";
     jobData.forEach(({ company, jobs }) => {
       const companyTitle = document.createElement("h2");
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
       const removeBtn = document.createElement("button");
       removeBtn.classList.add("remove-company");
-
+  
       const trashIcon = document.createElement('i');
       trashIcon.classList.add('fas', 'fa-trash');
       removeBtn.appendChild(trashIcon);
@@ -103,6 +103,9 @@ document.addEventListener('DOMContentLoaded', () => {
       output.appendChild(companyContainer);
   
       const ul = document.createElement("ul");
+  
+      const previousJobs = previousJobData.find(d => d.company === company)?.jobs || [];
+  
       jobs.forEach(job => {
         if (jobTitleIsAllowed(job)) {
           const li = document.createElement("li");
@@ -126,7 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
           const label = document.createElement("label");
           label.textContent = job;
   
-          // Create a container for the job title to enable horizontal scroll
+          // Make new jobs bold
+          if (!previousJobs.includes(job)) {
+            label.style.fontWeight = "bold";
+          }
+  
           const jobTitleContainer = document.createElement("div");
           jobTitleContainer.classList.add("job-title-container");
           jobTitleContainer.appendChild(label);
@@ -142,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   chrome.storage.local.get({ jobData: [], appliedJobs: [] }, ({ jobData, appliedJobs }) => {
     if (Array.isArray(jobData)) {
-      renderJobs(jobData, appliedJobs);
+      renderJobs(newJobData, appliedJobs, jobData);
     }
   });
 
@@ -160,38 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
     toast.style.zIndex = "9999";
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 2500);
-  }
-
-  async function waitForElement(tabId, className) {
-    const maxRetries = 10;
-    let attempt = 0;
-
-    return new Promise((resolve, reject) => {
-      const interval = setInterval(async () => {
-        console.log(`Attempt ${attempt + 1} to find ${className} on the page...`);
-
-        const [{ result }] = await chrome.scripting.executeScript({
-          target: { tabId },
-          func: (className) => {
-            return document.querySelector(`.${className}`) !== null;
-          },
-          args: [className],
-        });
-
-        if (result) {
-          console.log(`Element ${className} found on attempt ${attempt + 1}`);
-          clearInterval(interval);
-          resolve();
-        }
-
-        attempt++;
-        if (attempt >= maxRetries) {
-          console.error(`Timeout: Couldn't find element ${className} after ${maxRetries} attempts`);
-          clearInterval(interval);
-          reject(`Timeout: Couldn't find element after ${maxRetries} attempts`);
-        }
-      }, 1000);
-    });
   }
 
   async function scrapeFromTab(tabId, className) {
@@ -227,17 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     return result;
   }  
-
-  async function scrollPageToBottom(tabId) {
-    console.log('Scrolling the page to load content...');
-    await chrome.scripting.executeScript({
-      target: { tabId },
-      func: () => {
-        window.scrollTo(0, document.body.scrollHeight);
-      },
-    });
-    await new Promise(resolve => setTimeout(resolve, 2000));
-  }
 
   checkBtn.addEventListener("click", async () => {
     const loader = document.createElement("div");
@@ -298,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
       output.innerHTML = "";
       chrome.storage.local.set({ jobData: newJobData }, () => {
-        renderJobs(newJobData, appliedJobs);
+        renderJobs(newJobData, appliedJobs, jobData);
       });
   
       resultDiv.textContent = "";
