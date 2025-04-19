@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "PhiBot",
+  "name": "Φlux",
   "version": "1.0",
   "description": "Check for new internships using filters.",
   "permissions": ["storage", "scripting", "activeTab", "webNavigation"],
