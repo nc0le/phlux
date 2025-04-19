@@ -130,8 +130,8 @@ li {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 4px 8px;  /* Added horizontal padding */
-  box-sizing: border-box; /* Ensures padding doesn't overflow the box */
+  padding: 4px 8px;  
+  box-sizing: border-box; 
   flex-wrap: nowrap;
   overflow-x: hidden;
   text-overflow: ellipsis;
@@ -166,7 +166,7 @@ li input[type="checkbox"] {
   align-items: center;
   justify-content: center;
   transition: background-color 0.2s ease;
-  margin-left: 10px; /* spacing between buttons */
+  margin-left: 10px;
 }
 
 .fab:hover {
@@ -180,7 +180,7 @@ li input[type="checkbox"] {
 }
 
 .add-company-form.active {
-  display: flex; /* now uses flex layout in column direction */
+  display: flex; 
 }
 
 .notification-dot {
@@ -257,13 +257,13 @@ li input[type="checkbox"] {
   border-bottom: 1px solid #e0e0e0;
   padding: 10px 0;
   display: flex;
-  justify-content: space-between; /* Distributes space evenly between items */
-  align-items: center; /* Aligns both items vertically in the center */
+  justify-content: space-between;
+  align-items: center; 
   line-height: 1.5;
 }
 
 .company-container h2 {
-  margin: 0;  /* Remove default margin */
+  margin: 0; 
   padding-top: 20px; 
 }
 
@@ -311,7 +311,6 @@ li input[type="checkbox"] {
   margin: -10px 0 0 0;
 }
 
-/* Add these styles to allow horizontal scrolling for job titles */
 .job-title-container {
   display: inline-block;
   max-width: 100%;
@@ -322,5 +321,5 @@ li input[type="checkbox"] {
 
 .job-title-container label {
   display: inline-block;
-  min-width: 100%;  /* Ensure it stretches to fill the container */
+  min-width: 100%;
 }
