@@ -141,7 +141,7 @@ label {
 
 .new-job {
   font-weight: bold;
-  color: var(--primary-colors);
+  color: var(--primary-color);
 }
 
 
@@ -261,6 +261,7 @@ div > button {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid #ccc;
 }
 
 .job-title-container {

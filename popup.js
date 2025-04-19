@@ -22,9 +22,35 @@ document.addEventListener('DOMContentLoaded', () => {
       .split(',')
       .map(k => k.trim().toLowerCase())
       .filter(k => k.length > 0);
+
     chrome.storage.sync.set({ filterKeywords: keywords }, () => {
       filterKeywords = keywords;
+
+      chrome.storage.local.get({ jobData: [], appliedJobs: [] }, ({ jobData, appliedJobs }) => {
+        let reappeared = false;
+
+        jobData.forEach(({ company, jobs }) => {
+          const newlyVisibleJobs = jobs.filter(job => {
+            return !keywords.some(k => job.toLowerCase().includes(k));
+          });
+
+          const previouslyHiddenJobs = jobs.filter(job => !jobTitleIsAllowed(job));
+          const newlyUnhiddenJobs = newlyVisibleJobs.filter(job => previouslyHiddenJobs.includes(job));
+
+          if (newlyUnhiddenJobs.length > 0) reappeared = true;
+        });
+
+        renderJobs(jobData, appliedJobs, jobData);
+        if (reappeared) {
+          resultDiv.textContent = "";
+          card.classList.add("flash-success");
+          setTimeout(() => card.classList.remove("flash-success"), 1000);
+          showToast("🎉 Some jobs are visible again!", true);
+        }
+      });
+
       alert("Filter saved!");
+      document.getElementById("filterInputContainer").style.display = "none";
     });
   });
 
@@ -63,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById("companyUrl").value = "";
         document.getElementById("className").value = "";
         companyForm.classList.remove("active");
-        refreshAndRenderJobsOnLoad(); // Refresh right after saving
       });
     });
   });
@@ -125,6 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           const label = document.createElement("label");
           label.textContent = job;
+
           if (!previousJobs.includes(job)) {
             label.classList.add("new-job");
           }
@@ -142,15 +168,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function refreshAndRenderJobsOnLoad() {
-    chrome.storage.local.get({ jobData: [], appliedJobs: [] }, ({ jobData, appliedJobs }) => {
-      if (Array.isArray(jobData)) {
-        renderJobs(jobData, appliedJobs, jobData);
-      }
-    });
-  }
-
-  refreshAndRenderJobsOnLoad();
+  chrome.storage.local.get({ jobData: [], appliedJobs: [] }, ({ jobData, appliedJobs }) => {
+    if (Array.isArray(jobData)) {
+      renderJobs(jobData, appliedJobs, jobData);
+    }
+  });
 
   function showToast(msg, isSuccess) {
     const toast = document.createElement("div");
@@ -245,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const prevJobs = prevCompanyData ? prevCompanyData.jobs : [];
           const newJobs = jobs.filter(job => !prevJobs.includes(job));
 
-          if (newJobs.length > 0) foundNew = true;
+          if (newJobs.some(jobTitleIsAllowed)) foundNew = true;
           newJobData.push({ company: name, jobs });
 
           if (openedNewTab) await chrome.tabs.remove(tabId);
