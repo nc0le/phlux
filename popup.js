@@ -148,17 +148,13 @@ document.addEventListener('DOMContentLoaded', () => {
       trashIcon.classList.add('fas', 'fa-trash');
       removeBtn.appendChild(trashIcon);
   
-      // Add the button to redirect to the company's job listing
       const visitBtn = document.createElement("button");
       visitBtn.classList.add("visit-company");
       const linkIcon = document.createElement('i');
       linkIcon.classList.add('fas', 'fa-external-link-alt');
       visitBtn.appendChild(linkIcon);
       visitBtn.addEventListener("click", () => {
-        // Log the URL to the console for debugging
-        console.log(`Opening URL: ${url}`);
       
-        // Check if the URL is valid and not empty
         if (url && url.startsWith("http")) {
           window.open(url, "_blank");
         } else {
@@ -172,9 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const updatedJobData = result.jobData.filter(data => data.company !== company);
       
           chrome.storage.local.set({ companies: updatedCompanies, jobData: updatedJobData }, () => {
-            alert(`${company} removed!`);
-            
-            // Now use the updated jobData as the previous state in renderJobs
+            alert(`${company} removed!`)
             renderJobs(updatedJobData, appliedJobs, updatedJobData);
           });
         });
