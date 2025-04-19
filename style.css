@@ -184,7 +184,8 @@ div > button {
   padding: 0;
 }
 
-.remove-company {
+.remove-company,
+.visit-company {
   background: none;
   color: var(--font-color);
   font-size: 18px;
@@ -197,7 +198,8 @@ div > button {
   transition: transform 0.2s ease; 
 }
 
-.remove-company:hover {
+.remove-company:hover,
+.visit-company:hover {
   background-color: transparent;
   transform: scale(1.2);
 }
@@ -302,6 +304,10 @@ div > button {
   border-bottom: none;
 }
 
+.company-button-container {
+  display: flex;
+}
+
 #companyInputs label,
 #companyInputs select,
 #companyInputs input {
@@ -359,3 +365,16 @@ div > button {
   border-top: 1px solid #ddd;
   background-color: var(--bg-light);
 }
+
+/* .visit-company {
+  background: none;
+  border: none;
+  color: var(--font-color);
+  cursor: pointer;
+  margin-left: 10px;
+  font-size: 16px;
+}
+
+.visit-company:hover {
+  text-decoration: underline;
+} */

@@ -137,17 +137,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderJobs(jobData, appliedJobs, previousJobData = []) {
     output.innerHTML = "";
-  
-    jobData.forEach(({ company, jobs }) => {
+    jobData.forEach(({ company, jobs, url }) => {
       const companyTitle = document.createElement("h2");
       companyTitle.textContent = company;
   
+      // Create the "remove company" button
       const removeBtn = document.createElement("button");
       removeBtn.classList.add("remove-company");
-  
       const trashIcon = document.createElement('i');
       trashIcon.classList.add('fas', 'fa-trash');
       removeBtn.appendChild(trashIcon);
+  
+      // Add the button to redirect to the company's job listing
+      const visitBtn = document.createElement("button");
+      visitBtn.classList.add("visit-company");
+      const linkIcon = document.createElement('i');
+      linkIcon.classList.add('fas', 'fa-external-link-alt');
+      visitBtn.appendChild(linkIcon);
+      visitBtn.addEventListener("click", () => {
+        // Log the URL to the console for debugging
+        console.log(`Opening URL: ${url}`);
+      
+        // Check if the URL is valid and not empty
+        if (url && url.startsWith("http")) {
+          window.open(url, "_blank");
+        } else {
+          alert("Invalid URL. Please check the company's URL." + url);
+        }
+      });      
   
       removeBtn.addEventListener("click", () => {
         chrome.storage.local.get({ companies: [], jobData: [] }, (result) => {
@@ -156,25 +173,27 @@ document.addEventListener('DOMContentLoaded', () => {
   
           chrome.storage.local.set({ companies: updatedCompanies, jobData: updatedJobData }, () => {
             alert(`${company} removed!`);
-            renderJobs(updatedJobData, appliedJobs, updatedJobData);  // Update with new job data after removal
+            renderJobs(updatedJobData, appliedJobs);
           });
         });
       });
-  
+
       const companyContainer = document.createElement("div");
+      const companyButtonContainer = document.createElement("div");
       companyContainer.classList.add("company-container");
       companyContainer.appendChild(companyTitle);
-      companyContainer.appendChild(removeBtn);
+      companyButtonContainer.classList.add("company-button-container");
+      companyContainer.appendChild(companyButtonContainer);
+      companyButtonContainer.appendChild(visitBtn); 
+      companyButtonContainer.appendChild(removeBtn);
       output.appendChild(companyContainer);
   
       const ul = document.createElement("ul");
   
-      // Get previous jobs for this company, or default to an empty array if none found
       const previousJobs = previousJobData.find(d => d.company === company)?.jobs || [];
   
       jobs.forEach(job => {
-        // Apply the filter to exclude jobs containing any filter keywords
-        if (!filterKeywords.some(keyword => job.toLowerCase().includes(keyword.toLowerCase()))) {
+        if (jobTitleIsAllowed(job)) {
           const li = document.createElement("li");
   
           const checkbox = document.createElement("input");
@@ -196,7 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
           const label = document.createElement("label");
           label.textContent = job;
   
-          // Apply "new-job" class only if the job is not in previous jobs
           if (!previousJobs.includes(job)) {
             label.classList.add("new-job");
           }
@@ -314,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const newJobs = jobs.filter(job => !prevJobs.includes(job));
 
           if (newJobs.some(jobTitleIsAllowed)) foundNew = true;
-          newJobData.push({ company: name, jobs });
+          newJobData.push({ company: name, jobs, url });
 
           if (openedNewTab) await chrome.tabs.remove(tabId);
         } catch (err) {
