@@ -31,17 +31,24 @@
       
       <!-- Form to add new company (hidden by default) -->
       <div id="companyInputs" class="add-company-form">
+        <label for="companyDropdown">Select Known Company:</label>
+        <select id="companyDropdown">
+          <option value="">Choose a company</option>
+        </select>
+        <p class="manual-entry-note">Or enter in manually:</p>
         <label for="companyName">Company Name:</label>
         <input type="text" id="companyName" placeholder="e.g. Google" />
-      
+
         <label for="companyUrl">Job Listing URL:</label>
         <input type="text" id="companyUrl" placeholder="Paste job URL here" />
-      
+
         <label for="className">Job Title Class Name:</label>
         <input type="text" id="className" placeholder="e.g. QJPWVe" />
-      
-        <button id="saveCompany">Save Company</button>
-      </div>    
+
+        <button id="saveCompany">
+          <i class="fa-solid fa-check"></i> Save
+        </button>
+      </div>
 
       <div id="result" class="message"></div>
 

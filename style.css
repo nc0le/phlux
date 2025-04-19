@@ -27,9 +27,8 @@ body {
 }
 
 .logo {
-  height: 50px;
+  height: 45px;
   object-fit: contain;
-  margin-bottom: 5px;
   border-radius: 5px;
 }
 
@@ -190,7 +189,6 @@ div > button {
   color: var(--font-color);
   font-size: 18px;
   border: none;
-  margin-left: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -280,9 +278,8 @@ div > button {
 .company-box {
   border: 2px solid #ddd;
   border-radius: 10px;
-  padding: 15px;
+  padding: 5px 15px;
   background-color: var(--bg-box);
-  margin-top: 10px;
   max-height: 400px;
   overflow-y: auto;
 }
@@ -303,4 +300,51 @@ div > button {
 
 .company-container:last-child {
   border-bottom: none;
+}
+
+#companyInputs label,
+#companyInputs select,
+#companyInputs input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
+#companyInputs select {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: var(--font-size-base);
+  background-color: white;
+  color: var(--font-color);
+  transition: border 0.2s ease;
+}
+
+#companyInputs select:focus,
+#companyInputs input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(0, 92, 211, 0.1);
+}
+
+#saveCompany {
+  width: 100%;
+  background-color: var(--primary-color);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+#saveCompany:hover {
+  background-color: var(--primary-hover);
+}
+
+.manual-entry-note {
+  margin-top: 6px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  color: #555;
+  font-style: italic;
 }

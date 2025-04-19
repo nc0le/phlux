@@ -8,6 +8,54 @@ document.addEventListener('DOMContentLoaded', () => {
   const resultDiv = document.getElementById("result");
   const card = document.querySelector(".card");
 
+  function populateCompanyDropdown(companies) {
+    const dropdown = document.getElementById("companyDropdown");
+  
+    // Clear existing options except the placeholder
+    dropdown.innerHTML = '<option value="">-- Choose a company --</option>';
+  
+    // Sort alphabetically by name
+    companies.sort((a, b) => a.name.localeCompare(b.name));
+  
+    // Populate dropdown
+    companies.forEach(company => {
+      const option = document.createElement("option");
+      option.value = company.name;
+      option.textContent = company.name;
+      dropdown.appendChild(option);
+    });
+  }
+  
+  fetch(chrome.runtime.getURL('companies.csv'))
+  .then(response => response.text())
+  .then(csv => {
+    const rows = csv.trim().split('\n').slice(1);
+    const knownCompanies = rows.map(row => {
+      const [name, link, className] = row.split(',');
+      return { name: name.trim(), link: link.trim(), className: className.trim() };
+    });
+
+    populateCompanyDropdown(knownCompanies); // <-- Now the sorted dropdown will work properly
+
+    const dropdown = document.getElementById('companyDropdown');
+    dropdown.addEventListener('change', () => {
+      const value = dropdown.value;
+      if (value) {
+        const selected = knownCompanies.find(c => c.name === value);
+        if (selected) {
+          document.getElementById("companyName").value = selected.name;
+          document.getElementById("companyUrl").value = selected.link;
+          document.getElementById("className").value = selected.className;
+        }
+      } else {
+        // Clear if user resets the dropdown
+        document.getElementById("companyName").value = '';
+        document.getElementById("companyUrl").value = '';
+        document.getElementById("className").value = '';
+      }
+    });
+  });
+
   let filterKeywords = [];
 
   chrome.storage.sync.get(['filterKeywords'], (result) => {
