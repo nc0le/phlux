@@ -39,10 +39,10 @@
         <label for="companyName">Company Name:</label>
         <input type="text" id="companyName" placeholder="e.g. Google" />
 
-        <label for="companyUrl">Job Listing URL:</label>
+        <label for="companyUrl">Job Page URL:</label>
         <input type="text" id="companyUrl" placeholder="Paste job URL here" />
 
-        <label for="className">Job Title Class Name:</label>
+        <label for="className">Job Title HTML `class` Name:</label>
         <input type="text" id="className" placeholder="e.g. QJPWVe" />
 
         <button id="saveCompany">
@@ -56,7 +56,12 @@
         <div id="jobList" class="job-list"></div>
       </div>
     </div>
-
+    
+    <div id="footer" class="footer-bar">
+      <span id="version">v1.0.0</span>
+      <span id="lastUpdated">Last updated: never</span>
+    </div>
+    
     <script src="popup.js"></script>
   </body>
 </html>

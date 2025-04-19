@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dropdown = document.getElementById("companyDropdown");
     dropdown.innerHTML = '<option value="">-- Choose a company --</option>';
     companies.sort((a, b) => a.name.localeCompare(b.name));
-  
+
     companies.forEach(company => {
       const option = document.createElement("option");
       option.value = company.name;
@@ -20,35 +20,35 @@ document.addEventListener('DOMContentLoaded', () => {
       dropdown.appendChild(option);
     });
   }
-  
+
   fetch(chrome.runtime.getURL('companies.csv'))
-  .then(response => response.text())
-  .then(csv => {
-    const rows = csv.trim().split('\n').slice(1);
-    const knownCompanies = rows.map(row => {
-      const [name, link, className] = row.split(',');
-      return { name: name.trim(), link: link.trim(), className: className.trim() };
-    });
+    .then(response => response.text())
+    .then(csv => {
+      const rows = csv.trim().split('\n').slice(1);
+      const knownCompanies = rows.map(row => {
+        const [name, link, className] = row.split(',');
+        return { name: name.trim(), link: link.trim(), className: className.trim() };
+      });
 
-    populateCompanyDropdown(knownCompanies);
+      populateCompanyDropdown(knownCompanies);
 
-    const dropdown = document.getElementById('companyDropdown');
-    dropdown.addEventListener('change', () => {
-      const value = dropdown.value;
-      if (value) {
-        const selected = knownCompanies.find(c => c.name === value);
-        if (selected) {
-          document.getElementById("companyName").value = selected.name;
-          document.getElementById("companyUrl").value = selected.link;
-          document.getElementById("className").value = selected.className;
+      const dropdown = document.getElementById('companyDropdown');
+      dropdown.addEventListener('change', () => {
+        const value = dropdown.value;
+        if (value) {
+          const selected = knownCompanies.find(c => c.name === value);
+          if (selected) {
+            document.getElementById("companyName").value = selected.name;
+            document.getElementById("companyUrl").value = selected.link;
+            document.getElementById("className").value = selected.className;
+          }
+        } else {
+          document.getElementById("companyName").value = '';
+          document.getElementById("companyUrl").value = '';
+          document.getElementById("className").value = '';
         }
-      } else {
-        document.getElementById("companyName").value = '';
-        document.getElementById("companyUrl").value = '';
-        document.getElementById("className").value = '';
-      }
+      });
     });
-  });
 
   let filterKeywords = [];
 
@@ -330,6 +330,28 @@ document.addEventListener('DOMContentLoaded', () => {
       card.classList.add("flash-success");
       setTimeout(() => card.classList.remove("flash-success"), 1000);
       showToast(foundNew ? "🎉 New jobs found!" : "📭 No new jobs.", foundNew);
+
+      const now = new Date();
+      const formatted = now.toLocaleString("en-US", { hour: 'numeric', minute: 'numeric', hour12: true, day: 'numeric', month: 'long', year: 'numeric' });
+      chrome.storage.local.set({ lastUpdated: formatted }, () => {
+        const lastUpdatedElem = document.getElementById("lastUpdated");
+        if (lastUpdatedElem) {
+          lastUpdatedElem.textContent = "Last updated: " + formatted;
+        }
+      });
     });
   });
+
+  chrome.storage.local.get(["lastUpdated"], (result) => {
+    const lastUpdatedElem = document.getElementById("lastUpdated");
+    if (result.lastUpdated && lastUpdatedElem) {
+      lastUpdatedElem.textContent = "Last updated: " + result.lastUpdated;
+    }
+  });
+
+  const versionElem = document.getElementById("version");
+  if (versionElem) {
+    const manifest = chrome.runtime.getManifest();
+    versionElem.textContent = "v"+manifest.version;
+  }
 });
