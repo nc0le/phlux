@@ -139,6 +139,12 @@ label {
   color: var(--font-secondary);
 }
 
+.new-job {
+  font-weight: bold;
+  color: var(--primary-colors);
+}
+
+
 div > input,
 div > button {
   margin-bottom: 10px;

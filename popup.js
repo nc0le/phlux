@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
           // Make new jobs bold
           if (!previousJobs.includes(job)) {
-            label.style.fontWeight = "bold";
+            label.classList.add("new-job");
           }
   
           const jobTitleContainer = document.createElement("div");
