@@ -76,37 +76,38 @@ document.addEventListener('DOMContentLoaded', () => {
     jobData.forEach(({ company, jobs }) => {
       const companyTitle = document.createElement("h2");
       companyTitle.textContent = company;
-
+  
       const removeBtn = document.createElement("button");
       removeBtn.textContent = "-";
       removeBtn.classList.add("remove-company");
-
+  
       removeBtn.addEventListener("click", () => {
         chrome.storage.local.get({ companies: [], jobData: [] }, (result) => {
           const updatedCompanies = result.companies.filter(c => c.name !== company);
           const updatedJobData = result.jobData.filter(data => data.company !== company);
-
+  
           chrome.storage.local.set({ companies: updatedCompanies, jobData: updatedJobData }, () => {
             alert(`${company} removed!`);
             renderJobs(updatedJobData, appliedJobs);
           });
         });
       });
-
+  
       const companyContainer = document.createElement("div");
       companyContainer.classList.add("company-container");
       companyContainer.appendChild(companyTitle);
       companyContainer.appendChild(removeBtn);
       output.appendChild(companyContainer);
-
+  
       const ul = document.createElement("ul");
       jobs.forEach(job => {
         if (jobTitleIsAllowed(job)) {
           const li = document.createElement("li");
+  
           const checkbox = document.createElement("input");
           checkbox.type = "checkbox";
           checkbox.checked = appliedJobs.includes(job);
-
+  
           checkbox.addEventListener("change", () => {
             chrome.storage.local.get({ appliedJobs: [] }, (res) => {
               let updated = [...res.appliedJobs];
@@ -118,18 +119,23 @@ document.addEventListener('DOMContentLoaded', () => {
               chrome.storage.local.set({ appliedJobs: updated });
             });
           });
-
+  
           const label = document.createElement("label");
           label.textContent = job;
-
+  
+          // Create a container for the job title to enable horizontal scroll
+          const jobTitleContainer = document.createElement("div");
+          jobTitleContainer.classList.add("job-title-container");
+          jobTitleContainer.appendChild(label);
+  
           li.appendChild(checkbox);
-          li.appendChild(label);
+          li.appendChild(jobTitleContainer);
           ul.appendChild(li);
         }
       });
       output.appendChild(ul);
     });
-  }
+  }  
 
   chrome.storage.local.get({ jobData: [], appliedJobs: [] }, ({ jobData, appliedJobs }) => {
     if (Array.isArray(jobData)) {

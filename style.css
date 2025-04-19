@@ -310,3 +310,17 @@ li input[type="checkbox"] {
   margin-bottom: 0px;
   margin: -10px 0 0 0;
 }
+
+/* Add these styles to allow horizontal scrolling for job titles */
+.job-title-container {
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow-x: auto;
+  padding-right: 10px;
+}
+
+.job-title-container label {
+  display: inline-block;
+  min-width: 100%;  /* Ensure it stretches to fill the container */
+}
