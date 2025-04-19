@@ -170,13 +170,15 @@ document.addEventListener('DOMContentLoaded', () => {
         chrome.storage.local.get({ companies: [], jobData: [] }, (result) => {
           const updatedCompanies = result.companies.filter(c => c.name !== company);
           const updatedJobData = result.jobData.filter(data => data.company !== company);
-  
+      
           chrome.storage.local.set({ companies: updatedCompanies, jobData: updatedJobData }, () => {
             alert(`${company} removed!`);
-            renderJobs(updatedJobData, appliedJobs);
+            
+            // Now use the updated jobData as the previous state in renderJobs
+            renderJobs(updatedJobData, appliedJobs, updatedJobData);
           });
         });
-      });
+      });      
 
       const companyContainer = document.createElement("div");
       const companyButtonContainer = document.createElement("div");
