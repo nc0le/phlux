@@ -10,14 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function populateCompanyDropdown(companies) {
     const dropdown = document.getElementById("companyDropdown");
-  
-    // Clear existing options except the placeholder
     dropdown.innerHTML = '<option value="">-- Choose a company --</option>';
-  
-    // Sort alphabetically by name
     companies.sort((a, b) => a.name.localeCompare(b.name));
   
-    // Populate dropdown
     companies.forEach(company => {
       const option = document.createElement("option");
       option.value = company.name;
@@ -35,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return { name: name.trim(), link: link.trim(), className: className.trim() };
     });
 
-    populateCompanyDropdown(knownCompanies); // <-- Now the sorted dropdown will work properly
+    populateCompanyDropdown(knownCompanies);
 
     const dropdown = document.getElementById('companyDropdown');
     dropdown.addEventListener('change', () => {
@@ -48,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById("className").value = selected.className;
         }
       } else {
-        // Clear if user resets the dropdown
         document.getElementById("companyName").value = '';
         document.getElementById("companyUrl").value = '';
         document.getElementById("className").value = '';
