@@ -78,8 +78,11 @@ document.addEventListener('DOMContentLoaded', () => {
       companyTitle.textContent = company;
   
       const removeBtn = document.createElement("button");
-      removeBtn.textContent = "-";
       removeBtn.classList.add("remove-company");
+
+      const trashIcon = document.createElement('i');
+      trashIcon.classList.add('fas', 'fa-trash');
+      removeBtn.appendChild(trashIcon);
   
       removeBtn.addEventListener("click", () => {
         chrome.storage.local.get({ companies: [], jobData: [] }, (result) => {

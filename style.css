@@ -1,12 +1,29 @@
 :root {
-  --color: #005cd3;
+  --primary-color: #005cd3;
+  --primary-hover: #0f66d0;
+  --danger-color: #ea4335;
+  --danger-hover: #d93025;
+  --success-color: #188038;
+  --warning-color: #d93025;
+  --loading-color: #5f6368;
+  --bg-light: #f1f3f4;
+  --bg-card: white;
+  --bg-box: #f9f9f9;
+  --font-color: #202124;
+  --font-secondary: #555;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  --transition: background-color 0.2s ease;
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-lg: 28px;
 }
+
 body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #f1f3f4;
   width: 420px;
-  font-family: "droid-sans", sans-serif;
+  font-family: "droid-sans", "Segoe UI", sans-serif;
+  background-color: var(--bg-light);
 }
 
 .logo {
@@ -17,114 +34,115 @@ body {
 }
 
 .card {
-  background: white;
-  padding: 20px;
+  background: var(--bg-card);
+  padding: 10px 20px 20px;
   margin: 10px;
-  padding-top: 10px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
   text-align: center;
   box-sizing: border-box;
   overflow: hidden;
 }
 
-h1 {
-  font-size: 40px;
-  margin-bottom: 10px;
-  color: #202124;
+h1, .header-row h1 {
+  font-size: var(--font-size-lg);
+  margin: -10px 0 0;
+  color: var(--font-color);
+}
+
+button,
+.fab,
+.remove-company {
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: var(--transition);
 }
 
 button {
-  background-color: var(--color);
-  color: white;
-  border: none;
+  background-color: var(--primary-color);
   border-radius: 6px;
   padding: 10px 15px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+  font-size: var(--font-size-base);
 }
 
-button:hover {
-  background-color: #0f66d0;
+button:hover,
+.fab:hover {
+  background-color: var(--primary-hover);
 }
 
 .message {
   margin-top: 15px;
-  font-size: 14px;
+  font-size: var(--font-size-base);
   font-weight: 500;
 }
 
-.message.success {
-  color: #188038;
-}
-
-.message.warning {
-  color: #d93025;
-}
-
-.message.loading {
-  color: #5f6368;
-}
+.message.success { color: var(--success-color); }
+.message.warning { color: var(--warning-color); }
+.message.loading { color: var(--loading-color); }
 
 .job-list {
   margin-top: 20px;
   text-align: left;
-  font-size: 14px;
-  color: #202124;
+  font-size: var(--font-size-base);
+  color: var(--font-color);
   max-height: 200px;
   overflow-y: auto;
-  padding-right: 5px;
-  padding-bottom: 20px;
+  padding: 0 5px 20px;
 }
 
+.job-list h2:first-of-type {
+  margin-top: -30px;
+}
+
+ul,
 .job-list ul {
   list-style: none;
   padding: 0;
 }
 
-.job-list li {
-  padding: 5px 0;
+.job-list ul li,
+li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 4px 8px;
+  box-sizing: border-box;
+  width: 100%;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+}
+
+li label {
+  font-size: var(--font-size-base);
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+li input[type="checkbox"] {
+  transform: scale(1.2);
+  margin: 0;
+  flex-shrink: 0;
 }
 
 input {
   padding: 5px;
   margin: 5px;
-  font-size: 14px;
+  font-size: var(--font-size-base);
 }
 
 label {
   display: block;
   margin-top: 5px;
-  font-size: 12px;
-  color: #555;
+  font-size: var(--font-size-sm);
+  color: var(--font-secondary);
 }
 
-div > input, div > button {
+div > input,
+div > button {
   margin-bottom: 10px;
-}
-
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-li {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.5rem;
-  padding: 4px 0;
-  box-sizing: border-box;
-  width: 100%;
-  overflow: hidden;
-}
-
-
-li label {
-  font-size: 14px;
-  line-height: 1.4;
-  cursor: pointer;
 }
 
 #output {
@@ -136,51 +154,49 @@ li label {
   background: #fafafa;
 }
 
-li {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 4px 8px;  
-  box-sizing: border-box; 
-  flex-wrap: nowrap;
-  overflow-x: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-li input[type="checkbox"] {
-  transform: scale(1.2);
-  margin: 0;
-  flex-shrink: 0;
-}
-
-.job-list ul li {
-  padding-left: 8px;
-  padding-right: 8px;
-}
-
 .fab {
-  position: relative;
-  bottom: auto;
-  right: auto;
   width: 36px;
   height: 36px;
-  background-color: var(--color);
-  color: white;
+  background-color: var(--primary-color);
   font-size: 20px;
-  border: none;
   border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease;
-  margin-left: 10px;
 }
 
-.fab:hover {
-  background-color: #0f66d0;
+.button-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.button-row .fab {
+  font-size: 20px;
+  width: 35px;
+  height: 35px;
+  padding: 0;
+}
+
+.remove-company {
+  background: none;
+  color: var(--font-color);
+  font-size: 18px;
+  border: none;
+  margin-left: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none; 
+  transition: transform 0.2s ease; 
+}
+
+.remove-company:hover {
+  background-color: transparent;
+  transform: scale(1.2);
 }
 
 .add-company-form {
@@ -190,7 +206,7 @@ li input[type="checkbox"] {
 }
 
 .add-company-form.active {
-  display: flex; 
+  display: flex;
 }
 
 .notification-dot {
@@ -205,96 +221,19 @@ li input[type="checkbox"] {
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); opacity: 0.7; }
-  50% { transform: scale(1.3); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.7; }
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
 }
-
-.remove-company {
-  /* font-weight: bold; */
-  background-color: #ea4335;
-  color: white;
-  border: none;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  font-size: 20px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  margin-left: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-
-.remove-company:hover {
-  background-color: #d93025;
-}
-
-.company-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.button-row {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  align-items: center;
-}
-
-.button-row .fab {
-  font-size: 20px;
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-
-.company-box {
-  border: 2px solid #ddd;
-  border-radius: 10px;
-  padding: 15px;
-  background-color: #f9f9f9;
-  margin-top: 10px;
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.company-container {
-  border-bottom: 1px solid #e0e0e0;
-  padding: 0px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center; 
-  line-height: 1.5;
-}
-
-.company-container h2 {
-  margin: 0; 
-  padding-top: 20px; 
-}
-
-.company-container:last-child {
-  border-bottom: none;
-}
-
-.job-list h2:first-of-type {
-  margin-top: -30px;
-}
-
-
 
 .loader {
   border: 4px solid #f3f3f3;
-  border-top: 4px solid var(--color);
+  border-top: 4px solid var(--primary-color);
   border-radius: 50%;
   width: 30px;
   height: 30px;
@@ -303,8 +242,7 @@ li input[type="checkbox"] {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  to { transform: rotate(360deg); }
 }
 
 .loader-container {
@@ -320,12 +258,6 @@ li input[type="checkbox"] {
   align-items: center;
 }
 
-.header-row h1 {
-  font-size: 28px;
-  margin-bottom: 0px;
-  margin: -10px 0 0 0;
-}
-
 .job-title-container {
   display: inline-block;
   max-width: 100%;
@@ -337,4 +269,32 @@ li input[type="checkbox"] {
 .job-title-container label {
   display: inline-block;
   min-width: 100%;
+}
+
+.company-box {
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  padding: 15px;
+  background-color: var(--bg-box);
+  margin-top: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.company-container {
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  line-height: 1.5;
+}
+
+.company-container h2 {
+  margin: 0;
+  padding-top: 20px;
+}
+
+.company-container:last-child {
+  border-bottom: none;
 }
