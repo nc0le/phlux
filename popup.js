@@ -137,47 +137,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderJobs(jobData, appliedJobs, previousJobData = []) {
     output.innerHTML = "";
+  
     jobData.forEach(({ company, jobs }) => {
       const companyTitle = document.createElement("h2");
       companyTitle.textContent = company;
-
+  
       const removeBtn = document.createElement("button");
       removeBtn.classList.add("remove-company");
-
+  
       const trashIcon = document.createElement('i');
       trashIcon.classList.add('fas', 'fa-trash');
       removeBtn.appendChild(trashIcon);
-
+  
       removeBtn.addEventListener("click", () => {
         chrome.storage.local.get({ companies: [], jobData: [] }, (result) => {
           const updatedCompanies = result.companies.filter(c => c.name !== company);
           const updatedJobData = result.jobData.filter(data => data.company !== company);
-
+  
           chrome.storage.local.set({ companies: updatedCompanies, jobData: updatedJobData }, () => {
             alert(`${company} removed!`);
-            renderJobs(updatedJobData, appliedJobs);
+            renderJobs(updatedJobData, appliedJobs, updatedJobData);  // Update with new job data after removal
           });
         });
       });
-
+  
       const companyContainer = document.createElement("div");
       companyContainer.classList.add("company-container");
       companyContainer.appendChild(companyTitle);
       companyContainer.appendChild(removeBtn);
       output.appendChild(companyContainer);
-
+  
       const ul = document.createElement("ul");
-
+  
+      // Get previous jobs for this company, or default to an empty array if none found
       const previousJobs = previousJobData.find(d => d.company === company)?.jobs || [];
-
+  
       jobs.forEach(job => {
-        if (jobTitleIsAllowed(job)) {
+        // Apply the filter to exclude jobs containing any filter keywords
+        if (!filterKeywords.some(keyword => job.toLowerCase().includes(keyword.toLowerCase()))) {
           const li = document.createElement("li");
-
+  
           const checkbox = document.createElement("input");
           checkbox.type = "checkbox";
           checkbox.checked = appliedJobs.includes(job);
-
+  
           checkbox.addEventListener("change", () => {
             chrome.storage.local.get({ appliedJobs: [] }, (res) => {
               let updated = [...res.appliedJobs];
@@ -189,18 +192,19 @@ document.addEventListener('DOMContentLoaded', () => {
               chrome.storage.local.set({ appliedJobs: updated });
             });
           });
-
+  
           const label = document.createElement("label");
           label.textContent = job;
-
+  
+          // Apply "new-job" class only if the job is not in previous jobs
           if (!previousJobs.includes(job)) {
             label.classList.add("new-job");
           }
-
+  
           const jobTitleContainer = document.createElement("div");
           jobTitleContainer.classList.add("job-title-container");
           jobTitleContainer.appendChild(label);
-
+  
           li.appendChild(checkbox);
           li.appendChild(jobTitleContainer);
           ul.appendChild(li);
@@ -208,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       output.appendChild(ul);
     });
-  }
+  }  
 
   chrome.storage.local.get({ jobData: [], appliedJobs: [] }, ({ jobData, appliedJobs }) => {
     if (Array.isArray(jobData)) {
