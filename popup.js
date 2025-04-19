@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let filterKeywords = [];
 
-  // Load filter from Chrome storage
   chrome.storage.sync.get(['filterKeywords'], (result) => {
     if (result.filterKeywords) {
       filterKeywords = result.filterKeywords;
@@ -18,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Save filter keywords to storage
   document.getElementById("saveFilter").addEventListener("click", () => {
     const keywords = document.getElementById("filterKeywords").value
       .split(',')
@@ -30,13 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Toggle visibility of filter input
   document.getElementById("filterBtn").addEventListener("click", () => {
     const container = document.getElementById("filterInputContainer");
     container.style.display = container.style.display === 'none' ? 'block' : 'none';
   });
 
-  // Filtering function
   function jobTitleIsAllowed(title) {
     return !filterKeywords.some(keyword => title.toLowerCase().includes(keyword));
   }
@@ -67,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById("companyUrl").value = "";
         document.getElementById("className").value = "";
         companyForm.classList.remove("active");
+        refreshAndRenderJobsOnLoad(); // Refresh right after saving
       });
     });
   });
@@ -76,44 +73,44 @@ document.addEventListener('DOMContentLoaded', () => {
     jobData.forEach(({ company, jobs }) => {
       const companyTitle = document.createElement("h2");
       companyTitle.textContent = company;
-  
+
       const removeBtn = document.createElement("button");
       removeBtn.classList.add("remove-company");
-  
+
       const trashIcon = document.createElement('i');
       trashIcon.classList.add('fas', 'fa-trash');
       removeBtn.appendChild(trashIcon);
-  
+
       removeBtn.addEventListener("click", () => {
         chrome.storage.local.get({ companies: [], jobData: [] }, (result) => {
           const updatedCompanies = result.companies.filter(c => c.name !== company);
           const updatedJobData = result.jobData.filter(data => data.company !== company);
-  
+
           chrome.storage.local.set({ companies: updatedCompanies, jobData: updatedJobData }, () => {
             alert(`${company} removed!`);
             renderJobs(updatedJobData, appliedJobs);
           });
         });
       });
-  
+
       const companyContainer = document.createElement("div");
       companyContainer.classList.add("company-container");
       companyContainer.appendChild(companyTitle);
       companyContainer.appendChild(removeBtn);
       output.appendChild(companyContainer);
-  
+
       const ul = document.createElement("ul");
-  
+
       const previousJobs = previousJobData.find(d => d.company === company)?.jobs || [];
-  
+
       jobs.forEach(job => {
         if (jobTitleIsAllowed(job)) {
           const li = document.createElement("li");
-  
+
           const checkbox = document.createElement("input");
           checkbox.type = "checkbox";
           checkbox.checked = appliedJobs.includes(job);
-  
+
           checkbox.addEventListener("change", () => {
             chrome.storage.local.get({ appliedJobs: [] }, (res) => {
               let updated = [...res.appliedJobs];
@@ -125,19 +122,17 @@ document.addEventListener('DOMContentLoaded', () => {
               chrome.storage.local.set({ appliedJobs: updated });
             });
           });
-  
+
           const label = document.createElement("label");
           label.textContent = job;
-  
-          // Make new jobs bold
           if (!previousJobs.includes(job)) {
             label.classList.add("new-job");
           }
-  
+
           const jobTitleContainer = document.createElement("div");
           jobTitleContainer.classList.add("job-title-container");
           jobTitleContainer.appendChild(label);
-  
+
           li.appendChild(checkbox);
           li.appendChild(jobTitleContainer);
           ul.appendChild(li);
@@ -145,13 +140,17 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       output.appendChild(ul);
     });
-  }  
+  }
 
-  chrome.storage.local.get({ jobData: [], appliedJobs: [] }, ({ jobData, appliedJobs }) => {
-    if (Array.isArray(jobData)) {
-      renderJobs(newJobData, appliedJobs, jobData);
-    }
-  });
+  function refreshAndRenderJobsOnLoad() {
+    chrome.storage.local.get({ jobData: [], appliedJobs: [] }, ({ jobData, appliedJobs }) => {
+      if (Array.isArray(jobData)) {
+        renderJobs(jobData, appliedJobs, jobData);
+      }
+    });
+  }
+
+  refreshAndRenderJobsOnLoad();
 
   function showToast(msg, isSuccess) {
     const toast = document.createElement("div");
@@ -177,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
           return new Promise((resolve, reject) => {
             const start = Date.now();
             const check = () => {
-              const elements = document.querySelectorAll(selector); // Use full selector
+              const elements = document.querySelectorAll(selector);
               if (elements.length > 0) {
                 resolve(Array.from(elements).map(el => el.textContent.trim()).filter(Boolean));
               } else if (Date.now() - start > timeout) {
@@ -189,9 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
             check();
           });
         }
-        
+
         try {
-          // Split the className into individual classes and join them with dots for a valid selector
           const selector = className.split(' ').map(cls => `.${cls}`).join('');
           return await waitForElements(selector);
         } catch {
@@ -201,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
       args: [className],
     });
     return result;
-  }  
+  }
 
   checkBtn.addEventListener("click", async () => {
     const loader = document.createElement("div");
@@ -209,26 +207,25 @@ document.addEventListener('DOMContentLoaded', () => {
     loader.innerHTML = `<div class="loader"></div>`;
     output.innerHTML = "";
     output.appendChild(loader);
-  
+
     chrome.storage.local.get({ companies: [], appliedJobs: [], jobData: [] }, async ({ companies, appliedJobs, jobData }) => {
       const newJobData = [];
       let foundNew = false;
-  
+
       const scrapeJobsForCompany = async ({ name, url, className }) => {
         let tabId;
         let openedNewTab = false;
-  
+
         try {
           const [existingTab] = await chrome.tabs.query({ url });
-  
+
           if (existingTab) {
             tabId = existingTab.id;
           } else {
             const newTab = await chrome.tabs.create({ url, active: false });
             tabId = newTab.id;
             openedNewTab = true;
-  
-            // Wait until tab finishes loading
+
             await new Promise(resolve => {
               const checkTabLoaded = () => {
                 chrome.tabs.get(tabId, (tab) => {
@@ -242,33 +239,33 @@ document.addEventListener('DOMContentLoaded', () => {
               checkTabLoaded();
             });
           }
-  
+
           const jobs = await scrapeFromTab(tabId, className);
           const prevCompanyData = jobData.find(entry => entry.company === name);
           const prevJobs = prevCompanyData ? prevCompanyData.jobs : [];
           const newJobs = jobs.filter(job => !prevJobs.includes(job));
-  
+
           if (newJobs.length > 0) foundNew = true;
           newJobData.push({ company: name, jobs });
-  
+
           if (openedNewTab) await chrome.tabs.remove(tabId);
         } catch (err) {
           console.error(`Failed scraping ${name}:`, err);
           newJobData.push({ company: name, jobs: [] });
         }
       };
-  
+
       await Promise.all(companies.map(scrapeJobsForCompany));
-  
+
       output.innerHTML = "";
       chrome.storage.local.set({ jobData: newJobData }, () => {
         renderJobs(newJobData, appliedJobs, jobData);
       });
-  
+
       resultDiv.textContent = "";
       card.classList.add("flash-success");
       setTimeout(() => card.classList.remove("flash-success"), 1000);
       showToast(foundNew ? "🎉 New jobs found!" : "📭 No new jobs.", foundNew);
     });
-  });  
+  });
 });
