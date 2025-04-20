@@ -260,7 +260,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const check = () => {
               const elements = document.querySelectorAll(selector);
               if (elements.length > 0) {
-                resolve(Array.from(elements).map(el => el.textContent.trim()).filter(Boolean));
+                const texts = Array.from(elements).map(el => el.textContent.trim()).filter(Boolean);
+                resolve(texts);
               } else if (Date.now() - start > timeout) {
                 reject(new Error("Timeout waiting for elements"));
               } else {
@@ -270,18 +271,20 @@ document.addEventListener('DOMContentLoaded', () => {
             check();
           });
         }
-
+  
         try {
           const selector = className.split(' ').map(cls => `.${cls}`).join('');
           return await waitForElements(selector);
-        } catch {
+        } catch (err) {
+          console.error(`[Φlux] Error in scraping:`, err);
           return [];
         }
       },
       args: [className],
     });
+  
     return result;
-  }
+  }  
 
   checkBtn.addEventListener("click", async () => {
     const loader = document.createElement("div");
