@@ -3,7 +3,7 @@
   "name": "Φlux",
   "version": "1.0",
   "description": "Check for new internships using filters.",
-  "permissions": ["storage", "scripting", "activeTab", "webNavigation"],
+  "permissions": ["storage", "scripting"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
