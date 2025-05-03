@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Φlux",
+  "name": "phlux",
   "version": "1.0",
-  "description": "Check for new internships using filters.",
+  "description": "Check for new internships from all your favorite companies with a single click.",
   "permissions": ["storage", "scripting"],
   "action": {
     "default_popup": "popup.html",
