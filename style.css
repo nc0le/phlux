@@ -333,7 +333,7 @@ div > button {
   box-shadow: 0 0 0 2px rgba(0, 92, 211, 0.1);
 }
 
-#saveCompany {
+#saveCompany, #addAllCompaniesBtn {
   width: 100%;
   background-color: var(--primary-color);
   font-weight: 600;
@@ -343,7 +343,7 @@ div > button {
   gap: 8px;
 }
 
-#saveCompany:hover {
+#saveCompany:hover , #addAllCompaniesBtn:hover{
   background-color: var(--primary-hover);
 }
 

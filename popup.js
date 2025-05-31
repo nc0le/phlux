@@ -59,6 +59,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // document.getElementById("addAllCompaniesBtn").addEventListener("click", () => {
+  //   const dropdown = document.getElementById("companyDropdown");
+  //   const companies = Array.from(dropdown.options).slice(1); // Skip the default option
+  
+  //   // Show the loading spinner when starting the process
+  //   const loadingSpinner = document.querySelector(".loader-container");
+  //   loadingSpinner.style.display = "block";  // Show spinner
+  
+  //   // Function to handle the saving process and wait for it to complete
+  //   function saveCompany() {
+  //     return new Promise((resolve) => {
+  //       document.getElementById("saveCompany").click();
+        
+  //       // Adjust this if your save operation is asynchronous and needs confirmation (e.g., using a callback)
+  //       setTimeout(resolve, 5000); // Wait for 5 seconds to allow save operation to complete
+  //     });
+  //   }
+  
+  //   // Iterate through companies with increasing timeout
+  //   companies.forEach((companyOption, index) => {
+  //     setTimeout(async () => {
+  //       dropdown.value = companyOption.value;  // Select the company
+  //       dropdown.dispatchEvent(new Event('change'));  // Trigger the change event to update form
+        
+  //       await saveCompany(); // Ensure save completes before moving to the next one
+  //     }, index * 5000);  // Adjust timeout as needed (e.g., 5000ms between companies)
+  //   });
+  
+  //   // Hide the loading spinner when the process is complete
+  //   setTimeout(() => {
+  //     loadingSpinner.style.display = "none";  // Hide spinner after all companies are added
+  //   }, companies.length * 5000 + 1000); // Adjust based on total timeout duration
+  // });
+  
+
   document.getElementById("saveFilter").addEventListener("click", () => {
     const keywords = document.getElementById("filterKeywords").value
       .split(',')
@@ -126,7 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.storage.local.get({ companies: [] }, (result) => {
       const updated = [...result.companies, { name, url, className }];
       chrome.storage.local.set({ companies: updated }, () => {
-        alert(`${name} saved!`);
         document.getElementById("companyName").value = "";
         document.getElementById("companyUrl").value = "";
         document.getElementById("className").value = "";
@@ -141,7 +175,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const companyTitle = document.createElement("h2");
       companyTitle.textContent = company;
   
-      // Create the "remove company" button
       const removeBtn = document.createElement("button");
       removeBtn.classList.add("remove-company");
       const trashIcon = document.createElement('i');
@@ -168,7 +201,6 @@ document.addEventListener('DOMContentLoaded', () => {
           const updatedJobData = result.jobData.filter(data => data.company !== company);
       
           chrome.storage.local.set({ companies: updatedCompanies, jobData: updatedJobData }, () => {
-            alert(`${company} removed!`)
             renderJobs(updatedJobData, appliedJobs, updatedJobData);
           });
         });
