@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const card = document.querySelector(".card");
 
   var knownCompanies;
-  const tags = ["h1", "h2", "h3", "a", "span", "div", "p"];
+  const tags = ["h1", "h2", "h3", "a", "span", "div", "p", "td"];
 
   function clean(str) {
     return str.trim().replace(/^"(.*)"$/, '$1');
@@ -315,16 +315,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
   
         try {
-          const selector = className
+          const selector = (className || "")
             .trim()
-            .split(' ')
+            .match(/(?:[^\s"]+\[[^\]]+\]|[^\s"]+|"[^"]*")+/g)  // handles tags with [attr="..."] and normal classes
             .map((cls, i) => {
-              const isTag = i === 0 && tags.includes(cls.toLowerCase());
-              if (isTag) {
-                return cls;
-              } else {
-                return `.${cls}`;
-              }
+              const baseTag = cls.split('[')[0].toLowerCase();
+              const isTagSelector = i === 0 && (tags.includes(baseTag) || /^[a-z][a-z0-9-]*\[[^\]]+\]$/.test(cls));
+              return isTagSelector ? cls : `.${cls}`;
             })
             .join('');
           console.log(`selector:`, selector);
