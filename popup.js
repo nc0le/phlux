@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const selected = knownCompanies.find(c => c.name === value);
           if (selected) {
             document.getElementById("companyName").value = selected.name;
-            document.getElementById("companyUrl").value = selected.link;
+            document.getElementById("companyUrl").value = selected.url;
             document.getElementById("className").value = selected.className;
           }
         } else {
