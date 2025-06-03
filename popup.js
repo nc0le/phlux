@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const resultDiv = document.getElementById("result");
   const card = document.querySelector(".card");
 
+  var knownCompanies;
+
   function populateCompanyDropdown(companies) {
     const dropdown = document.getElementById("companyDropdown");
     dropdown.innerHTML = '<option value="">-- Choose a company --</option>';
@@ -25,10 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(response => response.text())
     .then(csv => {
       const rows = csv.trim().split('\n').slice(1);
-      const knownCompanies = rows.map(row => {
-        const [name, link, className] = row.split(',');
-        return { name: name.trim(), link: link.trim(), className: className.trim() };
-      });
+      knownCompanies = rows.map(row => {
+    const [name, link, className] = row.split(',');
+    return {
+      className: className.trim(),
+      name: name.trim(),
+      url: link.trim()
+    };
+  });
 
       populateCompanyDropdown(knownCompanies);
 
@@ -59,40 +65,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // document.getElementById("addAllCompaniesBtn").addEventListener("click", () => {
-  //   const dropdown = document.getElementById("companyDropdown");
-  //   const companies = Array.from(dropdown.options).slice(1); // Skip the default option
-  
-  //   // Show the loading spinner when starting the process
-  //   const loadingSpinner = document.querySelector(".loader-container");
-  //   loadingSpinner.style.display = "block";  // Show spinner
-  
-  //   // Function to handle the saving process and wait for it to complete
-  //   function saveCompany() {
-  //     return new Promise((resolve) => {
-  //       document.getElementById("saveCompany").click();
-        
-  //       // Adjust this if your save operation is asynchronous and needs confirmation (e.g., using a callback)
-  //       setTimeout(resolve, 5000); // Wait for 5 seconds to allow save operation to complete
-  //     });
-  //   }
-  
-  //   // Iterate through companies with increasing timeout
-  //   companies.forEach((companyOption, index) => {
-  //     setTimeout(async () => {
-  //       dropdown.value = companyOption.value;  // Select the company
-  //       dropdown.dispatchEvent(new Event('change'));  // Trigger the change event to update form
-        
-  //       await saveCompany(); // Ensure save completes before moving to the next one
-  //     }, index * 5000);  // Adjust timeout as needed (e.g., 5000ms between companies)
-  //   });
-  
-  //   // Hide the loading spinner when the process is complete
-  //   setTimeout(() => {
-  //     loadingSpinner.style.display = "none";  // Hide spinner after all companies are added
-  //   }, companies.length * 5000 + 1000); // Adjust based on total timeout duration
-  // });
-  
+  document.getElementById("addAllCompaniesBtn").addEventListener("click", () => {
+    if (!Array.isArray(knownCompanies) || knownCompanies.length === 0) {
+      alert("Companies not loaded yet. Please wait.");
+      return;
+    }
+
+    companyForm.classList.remove("active");
+
+    chrome.storage.local.clear(() => {
+      chrome.storage.local.set({ companies: knownCompanies }, () => {        
+        setTimeout(() => {
+          checkBtn.click();
+        }, 250);
+      });
+    });
+  });
+
+  document.getElementById("remAllCompaniesBtn").addEventListener("click", () => {
+    companyForm.classList.remove("active");
+    chrome.storage.local.clear();
+    renderJobs([], [], []);
+  });
 
   document.getElementById("saveFilter").addEventListener("click", () => {
     const keywords = document.getElementById("filterKeywords").value

@@ -333,7 +333,7 @@ div > button {
   box-shadow: 0 0 0 2px rgba(0, 92, 211, 0.1);
 }
 
-#saveCompany, #addAllCompaniesBtn {
+#saveCompany, #addAllCompaniesBtn, #remAllCompaniesBtn  {
   width: 100%;
   background-color: var(--primary-color);
   font-weight: 600;
@@ -343,7 +343,7 @@ div > button {
   gap: 8px;
 }
 
-#saveCompany:hover , #addAllCompaniesBtn:hover{
+#saveCompany:hover , #addAllCompaniesBtn:hover, #remAllCompaniesBtn:hover{
   background-color: var(--primary-hover);
 }
 
@@ -365,16 +365,3 @@ div > button {
   border-top: 1px solid #ddd;
   background-color: var(--bg-light);
 }
-
-/* .visit-company {
-  background: none;
-  border: none;
-  color: var(--font-color);
-  cursor: pointer;
-  margin-left: 10px;
-  font-size: 16px;
-}
-
-.visit-company:hover {
-  text-decoration: underline;
-} */
