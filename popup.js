@@ -315,18 +315,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
   
         try {
-          const selector = (className || "")
-            .trim()
-            .match(/(?:[^\s"]+\[[^\]]+\]|[^\s"]+|"[^"]*")+/g)  // handles tags with [attr="..."] and normal classes
-            .map((cls, i) => {
-              const baseTag = cls.split('[')[0].toLowerCase();
-              const isTagSelector = i === 0 && (tags.includes(baseTag) || /^[a-z][a-z0-9-]*\[[^\]]+\]$/.test(cls));
-              return isTagSelector ? cls : `.${cls}`;
-            })
-            .join('');
-          console.log(`selector:`, selector);
-          debugger;
-          return await waitForElements(selector);
+          // const selector = (className || "")
+          //   .trim()
+          //   .match(/(?:[^\s"]+\[[^\]]+\]|[^\s"]+|"[^"]*")+/g)  // handles tags with [attr="..."] and normal classes
+          //   .map((cls, i) => {
+          //     const baseTag = cls.split('[')[0].toLowerCase();
+          //     const isTagSelector = i === 0 && (tags.includes(baseTag) || /^[a-z][a-z0-9-]*\[[^\]]+\]$/.test(cls));
+          //     return isTagSelector ? cls : `.${cls}`;
+          //   })
+          //   .join('');
+          // console.log(`selector:`, selector);
+          return await waitForElements(className);
         } catch (err) {
           console.error(`[Φlux] Error in scraping:`, err);
           return [];
