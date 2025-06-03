@@ -9,6 +9,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const card = document.querySelector(".card");
 
   var knownCompanies;
+  const tags = ["h1", "h2", "h3", "a", "span", "div", "p"];
+
+  function clean(str) {
+    return str.trim().replace(/^"(.*)"$/, '$1');
+  }
+
+  function parseCSVRow(row) {
+    const pattern = /(".*?"|[^",]+)(?=\s*,|\s*$)/g;
+    const matches = row.match(pattern) || [];
+    return matches.map(field =>
+      field.trim().replace(/^"(.+)"$/, '$1')
+    );
+  }
 
   function populateCompanyDropdown(companies) {
     const dropdown = document.getElementById("companyDropdown");
@@ -28,11 +41,11 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(csv => {
       const rows = csv.trim().split('\n').slice(1);
       knownCompanies = rows.map(row => {
-    const [name, link, className] = row.split(',');
+    const [name, link, className] = parseCSVRow(row);
     return {
-      className: className.trim(),
-      name: name.trim(),
-      url: link.trim()
+      className: clean(className),
+      name: clean(name),
+      url: clean(link)
     };
   });
 
@@ -276,17 +289,20 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => toast.remove(), 2500);
   }
 
-  async function scrapeFromTab(tabId, className) {
+  async function scrapeFromTab(tabId, className, tags) {
     const [{ result }] = await chrome.scripting.executeScript({
       target: { tabId },
-      func: async (className) => {
+      func: async (className, tags) => {
         function waitForElements(selector, timeout = 10000) {
           return new Promise((resolve, reject) => {
             const start = Date.now();
             const check = () => {
               const elements = document.querySelectorAll(selector);
               if (elements.length > 0) {
-                const texts = Array.from(elements).map(el => el.textContent.trim()).filter(Boolean);
+                const texts = Array.from(elements).map(el => {
+                  return el.textContent.trim();
+                }).filter(Boolean);
+                console.log('texts:', texts);
                 resolve(texts);
               } else if (Date.now() - start > timeout) {
                 reject(new Error("Timeout waiting for elements"));
@@ -299,14 +315,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
   
         try {
-          const selector = className.split(' ').map(cls => `.${cls}`).join('');
+          const selector = className
+            .trim()
+            .split(' ')
+            .map((cls, i) => {
+              const isTag = i === 0 && tags.includes(cls.toLowerCase());
+              if (isTag) {
+                return cls;
+              } else {
+                return `.${cls}`;
+              }
+            })
+            .join('');
+          console.log(`selector:`, selector);
+          debugger;
           return await waitForElements(selector);
         } catch (err) {
           console.error(`[Φlux] Error in scraping:`, err);
           return [];
         }
       },
-      args: [className],
+      args: [className, tags],
     });
   
     return result;
@@ -329,11 +358,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
           const [existingTab] = await chrome.tabs.query({ url });
-
           if (existingTab) {
             tabId = existingTab.id;
           } else {
             const newTab = await chrome.tabs.create({ url, active: false });
+            console.log(newTab);
             tabId = newTab.id;
             openedNewTab = true;
 
@@ -351,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
           }
 
-          const jobs = await scrapeFromTab(tabId, className);
+          const jobs = await scrapeFromTab(tabId, className, tags);
           const prevCompanyData = jobData.find(entry => entry.company === name);
           const prevJobs = prevCompanyData ? prevCompanyData.jobs : [];
           const newJobs = jobs.filter(job => !prevJobs.includes(job));
