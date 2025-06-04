@@ -107,6 +107,12 @@ document.addEventListener('DOMContentLoaded', () => {
       .map(k => k.trim().toLowerCase())
       .filter(k => k.length > 0);
 
+    // Preserve the old filter so we can detect jobs that were hidden and
+    // are now visible again after updating the keywords.
+    const oldFilter = Array.isArray(filterKeywords)
+      ? [...filterKeywords]
+      : [];
+
     chrome.storage.sync.set({ filterKeywords: keywords }, () => {
       filterKeywords = keywords;
 
@@ -118,8 +124,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return !keywords.some(k => job.toLowerCase().includes(k));
           });
 
-          const previouslyHiddenJobs = jobs.filter(job => !jobTitleIsAllowed(job));
-          const newlyUnhiddenJobs = newlyVisibleJobs.filter(job => previouslyHiddenJobs.includes(job));
+          // Jobs that were hidden using the old filter keywords
+          const previouslyHiddenJobs = jobs.filter(job =>
+            oldFilter.some(k => job.toLowerCase().includes(k))
+          );
+          const newlyUnhiddenJobs = newlyVisibleJobs.filter(job =>
+            previouslyHiddenJobs.includes(job)
+          );
 
           if (newlyUnhiddenJobs.length > 0) reappeared = true;
         });
