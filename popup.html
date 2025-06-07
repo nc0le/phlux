@@ -4,14 +4,17 @@
     <meta charset="UTF-8">
     <title>Φlux</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://use.typekit.net/nun1hsn.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+  </head>  
   </head>  
   <body>
     <div class="card">
       <div class="header-row">
         <div class="logo-container">
-          <img src="bluelogo.jpeg" alt="Φlux Logo" class="logo" />
+          <img src="logo.png" alt="Φlux Logo" class="logo" />
         </div>
         <div class="button-row">
           <button id="checkBtn" title="Check Jobs"><i class="fa-solid fa-sync"></i></button>
@@ -22,9 +25,9 @@
       
       
       <!-- Filter input (hidden by default) -->
-      <div id="filterInputContainer" style="display: none; margin-top: 10px;">
+      <div id="filterInputContainer" class="filter-container">
         <label for="filterKeywords">Exclude Jobs Containing:</label>
-        <input type="text" id="filterKeywords" placeholder="e.g. PhD, Senior, Staff" />
+        <input type="text" id="filterKeywords" placeholder="e.g. PhD, Senior, Staff" class="filter-text"/>
         <button id="saveFilter"><i class="fa-solid fa-check"></i></button>
 
       </div>

@@ -1,17 +1,17 @@
 :root {
-  --primary-color: #005cd3;
-  --primary-hover: #0f66d0;
+  --primary-color: #A1D0F8;
+  --primary-hover: #8abce8;
   --danger-color: #ea4335;
   --danger-hover: #d93025;
-  --success-color: #188038;
-  --warning-color: #d93025;
+  --success-color: #3ab366;
+  --warning-color: #d34035;
   --loading-color: #5f6368;
   --bg-light: #f1f3f4;
   --bg-card: white;
   --bg-box: #f9f9f9;
-  --font-color: #202124;
+  --font-color: #3277B3;
   --font-secondary: #555;
-  --border-radius: 12px;
+  --border-radius: 20px;
   --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   --transition: background-color 0.2s ease;
   --font-size-sm: 12px;
@@ -22,17 +22,37 @@
 body {
   margin: 0;
   width: 420px;
-  font-family: "droid-sans", "Segoe UI", sans-serif;
+  font-family: 'JetBrains Mono', monospace;
   background-color: var(--bg-light);
 }
 
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 .logo {
-  height: 45px;
+  height: 30px;
   object-fit: contain;
-  border-radius: 5px;
+  margin-top: 12px;
+  margin-left: 5px;
+}
+.button-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.button-row .fab {
+  font-size: 20px;
+  width: 35px;
+  height: 35px;
+  padding: 0;
 }
 
 .card {
+  font-family: 'JetBrains Mono', monospace;
   background: var(--bg-card);
   padding: 10px 20px 20px;
   margin: 10px;
@@ -43,33 +63,48 @@ body {
   overflow: hidden;
 }
 
-h1, .header-row h1 {
-  font-size: var(--font-size-lg);
-  margin: -10px 0 0;
-  color: var(--font-color);
-}
-
 button,
 .fab,
 .remove-company {
   border: none;
-  color: white;
+  color: #7c7c7c;
   cursor: pointer;
   transition: var(--transition);
 }
 
 button {
-  background-color: var(--primary-color);
-  border-radius: 6px;
-  padding: 10px 15px;
+  background-color: #D6D6D6;
+  border-radius: 8px;
+  padding: 10px 10px;
   font-size: var(--font-size-base);
+  margin-top: 15px;
 }
 
 button:hover,
 .fab:hover {
-  background-color: var(--primary-hover);
+  background-color: #A1D0F8;
+  color: var(--font-color);
 }
 
+.fab {
+  width: 36px;
+  height: 36px;
+  background-color: #D6D6D6;
+  font-size: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-container{
+  margin-top: 7px;
+}
+.filter-text{
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  width: 80%;
+}
 .message {
   margin-top: 15px;
   font-size: var(--font-size-base);
@@ -83,7 +118,7 @@ button:hover,
 .job-list {
   margin-top: 20px;
   text-align: left;
-  font-size: var(--font-size-base);
+  font-size: 12px;
   color: var(--font-color);
   max-height: 200px;
   overflow-y: auto;
@@ -158,32 +193,6 @@ div > button {
   background: #fafafa;
 }
 
-.fab {
-  width: 36px;
-  height: 36px;
-  background-color: var(--primary-color);
-  font-size: 20px;
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.button-row {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-}
-
-.button-row .fab {
-  font-size: 20px;
-  width: 35px;
-  height: 35px;
-  padding: 0;
-}
-
 .remove-company,
 .visit-company {
   background: none;
@@ -221,7 +230,7 @@ div > button {
   position: absolute;
   top: 8px;
   right: 8px;
-  background-color: green;
+  background-color: rgb(47, 180, 76);
   animation: pulse 1s infinite;
 }
 
@@ -257,13 +266,6 @@ div > button {
   margin: 20px 0;
 }
 
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #ccc;
-}
-
 .job-title-container {
   display: inline-block;
   max-width: 100%;
@@ -279,8 +281,8 @@ div > button {
 
 .company-box {
   border: 2px solid #ddd;
-  border-radius: 10px;
-  padding: 5px 15px;
+  border-radius: 15px;
+  padding: 0px 15px;
   background-color: var(--bg-box);
   max-height: 400px;
   overflow-y: auto;
@@ -364,4 +366,31 @@ div > button {
   padding: 8px 12px;
   border-top: 1px solid #ddd;
   background-color: var(--bg-light);
+}
+.hidden {
+  display: none !important;
+}
+/* Styles for Toast Notifications */
+.toast-message {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  padding: 10px 20px;
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  max-width: 300px;
+  word-wrap: break-word;
+}
+.toast-success {
+  background-color: #24bb44;
+}
+.toast-error {
+  background-color: #d53c2e; /* Red for error */
+}
+.toast-visible {
+  opacity: 1;
 }

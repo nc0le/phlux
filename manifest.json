@@ -26,5 +26,9 @@
       "resources": ["icons/icon16.jpeg", "icons/icon48.jpeg", "icons/icon128.jpeg"],
       "matches": ["<all_urls>"]
     }
-  ]
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' https://use.typekit.net https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://use.typekit.net https://cdnjs.cloudflare.com https://fonts.gstatic.com;"
+  }
+
 }
